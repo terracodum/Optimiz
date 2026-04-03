@@ -2,7 +2,7 @@ from prettytable import PrettyTable
 
 def DihotomMethod(func: callable, a: float, b: float, eps: float, iter_count: int):
     table = PrettyTable()
-    table.field_names = ["iter_num", "a", "b", "length", "x_1", "x_2", "f(x_1)", "f()x_2"]
+    table.field_names = ["iter_num", "a", "b", "length", "x_1", "x_2", "f(x_1)", "f(x_2)"]
     dih(func, a, b, eps, iter_count, table)
 
 
