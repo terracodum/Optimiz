@@ -11,7 +11,7 @@ def GRM(
     eps: float, 
     iter_count: int, 
     find_max=False
-    ) -> list:
+    ) -> None:
 
     table = PrettyTable()
     table.field_names = ["iter_num", "a", "b", "length", "x_1", "x_2", "f(x_1)", "f()x_2"]
