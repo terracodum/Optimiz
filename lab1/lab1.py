@@ -5,6 +5,8 @@ import math
 
 print("Вариант 1\nf(x) = sin(x) на отрезке [ -pi ; pi/2 ]\n")
 
-GRM(math.sin, -math.pi, math.pi/2, 0.01, 0)
-DihotomMethod(math.sin, -math.pi, math.pi/2, 0.01, 0)
-FibonaciMethod(math.sin, -math.pi, math.pi/2, 0.01, 0)
+def func(x):
+    return (x-2) ** 2
+GRM(func, 0, 3, 0.01, 0)
+DihotomMethod(func, 0, 3, 0.01, 0)
+FibonaciMethod(func, 0, 3, 0.01, 0)

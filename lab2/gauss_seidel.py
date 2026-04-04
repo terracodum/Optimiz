@@ -1,14 +1,10 @@
 import math
 from prettytable import PrettyTable
+from typing import Callable
 
-def func(x, y):
-    A = 20
-    a = 1
-    b = 2
-    return A - (x-a) * math.pow(math.e, -(x-a)) - (y-b) * math.pow(math.e, -(y-b))
-step = 0.1 
-eps = 0.0001 
-def gauss(func, eps):
+
+def gauss(func: Callable, eps: float) -> list:
+    print("\nМетод Гаусса-Зейделя")
     table = PrettyTable()
     table.field_names = ["iter_num", "x", "y", "step", "dist", "f()"]
 
@@ -24,26 +20,23 @@ def gauss(func, eps):
         itter += 1
         x_old, y_old = x, y
 
-        if func(x + step, y) < func(x, y):
+        while func(x + step, y) < func(x, y):
             x += step
-        elif func(x - step, y) < func(x, y):
+        while func(x - step, y) < func(x, y):
             x -= step
 
-        if func(x, y + step) < func(x, y):
+        # Поиск по Y
+        while func(x, y + step) < func(x, y):
             y += step
-        elif func(x, y - step) < func(x, y):
+        while func(x, y - step) < func(x, y):
             y -= step
 
         dist = math.sqrt((x - x_old) ** 2 + (y - y_old) ** 2)
-        if dist == 0:
+        if dist < step: # Если сдвиг меньше шага, значит пора уточняться
             step /= 2
-            dist = 100 # Чтобы не выйти из цикла, пока шаг велик
-            if step < eps: # Предохранитель
-                break
 
         table.add_row([f"{itter}", f"{x:.4f}", f"{y:.4f}", f"{step:.4f}", f"{dist:.4f}", f"{func(x, y):.4f}"])\
         
     print(table)
-    return f"Минимальный x = {x}, Минимальный y = {y}"
-
-print(gauss(func, 0.01))
+    print(f"Минимальный x = {x}, Минимальный y = {y}")
+    return [x, y]
