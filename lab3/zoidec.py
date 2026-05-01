@@ -15,8 +15,10 @@ def zoutendijk(func: Callable, phi: Callable, eps: float) -> list:
         df_dx = (func(x + delta, y) - func(x, y)) / delta
         df_dy = (func(x, y + delta) - func(x, y)) / delta
         
-        # Направление вдоль линии [1, 2]
-        sx, sy = 1.0, 2.0
+        # Касательная к phi=0 численно: градиент phi → (-dpy, dpx)
+        dpx = (phi(x + delta, y) - phi(x, y)) / delta
+        dpy = (phi(x, y + delta) - phi(x, y)) / delta
+        sx, sy = -dpy, dpx
         
         # Выбираем направление спуска по линии
         if (df_dx * sx + df_dy * sy) > 0:

@@ -16,9 +16,13 @@ def rozen(func: Callable, phi: Callable, eps: float) -> list:
         gx = (func(x + delta, y) - func(x, y)) / delta
         gy = (func(x, y + delta) - func(x, y)) / delta
 
-        # Проекция градиента на касательную к линии 2x - y - 2 = 0, направление [1, 2]
-        proj_s = (gx * 1 + gy * 2) / 5
-        sx, sy = proj_s * 1, proj_s * 2
+        # Градиент phi численно → касательная к phi=0: перпендикуляр (-dpy, dpx)
+        dpx = (phi(x + delta, y) - phi(x, y)) / delta
+        dpy = (phi(x, y + delta) - phi(x, y)) / delta
+        tx, ty = -dpy, dpx
+        norm_t = tx**2 + ty**2
+        proj_s = (gx * tx + gy * ty) / norm_t
+        sx, sy = proj_s * tx, proj_s * ty
 
         # Условие остановки: проекция градиента мала — уже в минимуме
         norm_s = math.sqrt(sx**2 + sy**2)

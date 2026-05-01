@@ -7,15 +7,19 @@ def lagrange(func: Callable, phi: Callable, eps: float) -> list:
     table = PrettyTable()
     table.field_names = ["iter", "x", "y", "lambda", "error"]
 
-    x, y, lam = 1.0, 1.0, 0.0 
-    lr = 0.1 
-    
+    x, y, lam = 1.0, 1.0, 0.0
+    lr = 0.1
+    delta = 1e-6
+
     for i in range(101):
-        # Производные функции f = x^2 + y^2 и ограничения phi = 2x - y - 2
-        # dL/dx = df/dx + lam * dphi/dx
-        dL_dx = 2*x + lam*2
-        dL_dy = 2*y + lam*(-1)
-        dL_dlam = 2*x - y - 2
+        df_dx = (func(x + delta, y) - func(x, y)) / delta
+        df_dy = (func(x, y + delta) - func(x, y)) / delta
+        dphi_dx = (phi(x + delta, y) - phi(x, y)) / delta
+        dphi_dy = (phi(x, y + delta) - phi(x, y)) / delta
+
+        dL_dx = df_dx + lam * dphi_dx
+        dL_dy = df_dy + lam * dphi_dy
+        dL_dlam = phi(x, y)
         
         error = math.sqrt(dL_dx**2 + dL_dy**2 + dL_dlam**2)
         table.add_row([i, f"{x:.4f}", f"{y:.4f}", f"{lam:.4f}", f"{error:.6f}"])
