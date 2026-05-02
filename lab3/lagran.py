@@ -27,8 +27,8 @@ def lagrange(func: Callable, phi: Callable, eps: float) -> list:
         if error < eps: break
             
         x -= lr * dL_dx
-        y -= lr * dL_dy
-        lam += lr * dL_dlam # Лямбду обычно обновляем с плюсом
+        y += lr * dL_dy  # y: знак перевёрнут, т.к. f вогнута по y (Гессиан < 0)
+        lam += lr * dL_dlam
         
     print(table)
     print(f"Оптимальное решение: x = {x:.4f}, y = {y:.4f}, f(x,y) = {func(x,y):.4f}")

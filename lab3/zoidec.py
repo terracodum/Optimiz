@@ -20,15 +20,15 @@ def zoutendijk(func: Callable, phi: Callable, eps: float) -> list:
         dpy = (phi(x, y + delta) - phi(x, y)) / delta
         sx, sy = -dpy, dpx
         
-        # Выбираем направление спуска по линии
-        if (df_dx * sx + df_dy * sy) > 0:
+        # Выбираем направление роста f вдоль касательной (ищем максимум)
+        if (df_dx * sx + df_dy * sy) < 0:
             sx, sy = -sx, -sy
-            
+
         nx, ny = x + step * sx, y + step * sy
-        
+
         table.add_row([i, f"{x:.4f}", f"{y:.4f}", f"{step:.4f}", f"{func(x,y):.4f}", f"{phi(x,y):.4f}"])
-        
-        if func(nx, ny) > func(x, y):
+
+        if func(nx, ny) < func(x, y):
             step /= 2
             if step < eps: break
             continue

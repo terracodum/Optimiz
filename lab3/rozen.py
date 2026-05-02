@@ -24,14 +24,15 @@ def rozen(func: Callable, phi: Callable, eps: float) -> list:
         proj_s = (gx * tx + gy * ty) / norm_t
         sx, sy = proj_s * tx, proj_s * ty
 
-        # Условие остановки: проекция градиента мала — уже в минимуме
+        # Условие остановки: проекция градиента мала — достигнут экстремум на ограничении
         norm_s = math.sqrt(sx**2 + sy**2)
         if norm_s < eps:
             break
 
-        nx, ny = x - step * sx, y - step * sy
+        # Идём в сторону РОСТА f (ищем максимум, т.к. f=x²-y² — седло)
+        nx, ny = x + step * sx, y + step * sy
 
-        if func(nx, ny) >= func(x, y):
+        if func(nx, ny) <= func(x, y):
             step /= 2
             if step < eps * 0.01:
                 break
