@@ -2,9 +2,8 @@ import math
 from prettytable import PrettyTable
 from typing import Callable
 
-def zoutendijk(func: Callable, phi: Callable, eps: float, maximize: bool = False) -> list:
-    mode = "максимум" if maximize else "минимум"
-    print(f"\nМетод Зойтендейка — {mode}")
+def zoutendijk(func: Callable, phi: Callable, eps: float) -> list:
+    print("\nМетод Зойтендейка")
     table = PrettyTable()
     table.field_names = ["iter", "x", "y", "step", "f()", "phi()"]
 
@@ -21,24 +20,21 @@ def zoutendijk(func: Callable, phi: Callable, eps: float, maximize: bool = False
         dpy = (phi(x, y + delta) - phi(x, y)) / delta
         sx, sy = -dpy, dpx
 
-        dot = df_dx * sx + df_dy * sy
-        # maximize: идём туда где f растёт (dot > 0); minimize: где убывает (dot < 0)
-        if (maximize and dot < 0) or (not maximize and dot > 0):
+        if (df_dx * sx + df_dy * sy) > 0:
             sx, sy = -sx, -sy
 
         nx, ny = x + step * sx, y + step * sy
 
         table.add_row([i, f"{x:.4f}", f"{y:.4f}", f"{step:.4f}", f"{func(x,y):.4f}", f"{phi(x,y):.4f}"])
 
-        improved = func(nx, ny) > func(x, y) if maximize else func(nx, ny) < func(x, y)
-        if not improved:
+        if func(nx, ny) > func(x, y):
             step /= 2
             if step < eps: break
             continue
 
         if math.sqrt((nx - x)**2 + (ny - y)**2) < eps: break
         x, y = nx, ny
-        
+
     print(table)
     print(f"Оптимальное решение: x = {x:.4f}, y = {y:.4f}, f(x,y) = {func(x,y):.4f}")
     return [x, y]

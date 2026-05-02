@@ -2,9 +2,8 @@ import math
 from prettytable import PrettyTable
 from typing import Callable
 
-def rozen(func: Callable, phi: Callable, eps: float, maximize: bool = False) -> list:
-    mode = "максимум" if maximize else "минимум"
-    print(f"\nМетод проекции градиента (Розена) — {mode}")
+def rozen(func: Callable, phi: Callable, eps: float) -> list:
+    print("\nМетод проекции градиента (Розена)")
     table = PrettyTable()
     table.field_names = ["iter", "x", "y", "step", "f()", "phi()"]
 
@@ -29,11 +28,9 @@ def rozen(func: Callable, phi: Callable, eps: float, maximize: bool = False) -> 
         if norm_s < eps:
             break
 
-        sign = 1 if maximize else -1
-        nx, ny = x + sign * step * sx, y + sign * step * sy
+        nx, ny = x - step * sx, y - step * sy
 
-        improved = func(nx, ny) > func(x, y) if maximize else func(nx, ny) < func(x, y)
-        if not improved:
+        if func(nx, ny) >= func(x, y):
             step /= 2
             if step < eps * 0.01:
                 break
