@@ -4,39 +4,39 @@ from prettytable import PrettyTable
 
 
 def discriminant_pareto(funcs, n_points=10):
-    f1, f2, f3 = funcs
+    n = len(funcs)
     print("\nДискриминационный метод")
+
+    # Безусловные минимумы всех функций кроме последней
+    f_mins = []
+    for fi in funcs[:-1]:
+        res = minimize(fi, [0.0, 0.0], method='Nelder-Mead')
+        f_mins.append(fi(res.x))
+
+    # Диапазоны ограничений: от жёстких до мягких
+    lim_ranges = [np.linspace(fmin + 20, fmin + 500, n_points) for fmin in f_mins]
+
     table = PrettyTable()
-    table.field_names = ["#", "lim_f1", "lim_f2", "x1", "x2", "f1", "f2", "f3"]
-
-    # Минимальные значения функций в их безусловных минимумах
-    x1_min = minimize(f1, [0.0, 0.0], method='Nelder-Mead').x
-    x2_min = minimize(f2, [0.0, 0.0], method='Nelder-Mead').x
-    f1_min = f1(x1_min)
-    f2_min = f2(x2_min)
-
-    # Меняем уступки (ограничения) на f1 и f2, минимизируем f3
-    # От жёстких до мягких — получаем разные точки Парето
-    lim1_vals = np.linspace(f1_min + 20, f1_min + 500, n_points)
-    lim2_vals = np.linspace(f2_min + 15, f2_min + 300, n_points)
+    table.field_names = (["#"]
+                         + [f"lim_f{i+1}" for i in range(n - 1)]
+                         + ["x1", "x2"]
+                         + [f"f{i+1}" for i in range(n)])
 
     points = []
     for i in range(n_points):
-        lim1 = lim1_vals[i]
-        lim2 = lim2_vals[i]
         constraints = [
-            {'type': 'ineq', 'fun': lambda x, l=lim1: l - f1(x)},
-            {'type': 'ineq', 'fun': lambda x, l=lim2: l - f2(x)},
+            {'type': 'ineq', 'fun': lambda x, fi=funcs[j], l=lim_ranges[j][i]: l - fi(x)}
+            for j in range(n - 1)
         ]
-        res = minimize(f3, [0.0, 0.0], method='SLSQP',
+        res = minimize(funcs[-1], [0.0, 0.0], method='SLSQP',
                        constraints=constraints,
                        options={'ftol': 1e-9, 'maxiter': 1000})
         x = res.x
         points.append(x.tolist())
-        table.add_row([i + 1,
-                       f"{lim1:.1f}", f"{lim2:.1f}",
-                       f"{x[0]:.4f}", f"{x[1]:.4f}",
-                       f"{f1(x):.4f}", f"{f2(x):.4f}", f"{f3(x):.4f}"])
+        table.add_row([i + 1]
+                      + [f"{lim_ranges[j][i]:.1f}" for j in range(n - 1)]
+                      + [f"{x[0]:.4f}", f"{x[1]:.4f}"]
+                      + [f"{funcs[j](x):.4f}" for j in range(n)])
 
     print(table)
     return points
