@@ -19,17 +19,14 @@ def barrier_method(func, constraints, x0, eps, r0=1.0, decay=0.1):
     r = r0
 
     for k in range(50):
-        res = minimize(_P_barrier, x, args=(r, func, constraints),
-                       method='Nelder-Mead',
-                       options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 10000})
+        res = minimize(_P_barrier, x, args=(r, func, constraints), method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 10000})
         x = res.x
 
         g_vals = [g(x) for g in constraints]
         barrier_val = sum(-np.log(max(gv, 1e-12)) for gv in g_vals)
         r_barrier = r * barrier_val
 
-        table.add_row([k + 1, f"{r:.6f}", f"{x[0]:.6f}", f"{x[1]:.6f}",
-                       f"{func(x):.6f}", f"{r_barrier:.6f}"])
+        table.add_row([k + 1, f"{r:.6f}", f"{x[0]:.6f}", f"{x[1]:.6f}", f"{func(x):.6f}", f"{r_barrier:.6f}"])
 
         if abs(r_barrier) < eps:
             break

@@ -20,15 +20,12 @@ def penalty_method(func, constraints, x0, eps, r0=1.0, growth=10.0):
     r = r0
 
     for k in range(50):
-        res = minimize(_P_penalty, x, args=(r, func, constraints),
-                       method='Nelder-Mead',
-                       options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 10000})
+        res = minimize(_P_penalty, x, args=(r, func, constraints), method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 10000})
         x = res.x
 
         r_alpha = r * _alpha(x, constraints)
 
-        table.add_row([k + 1, f"{r:.2f}", f"{x[0]:.6f}", f"{x[1]:.6f}",
-                       f"{func(x):.6f}", f"{r_alpha:.6f}"])
+        table.add_row([k + 1, f"{r:.2f}", f"{x[0]:.6f}", f"{x[1]:.6f}", f"{func(x):.6f}", f"{r_alpha:.6f}"])
 
         if r_alpha < eps:
             break
