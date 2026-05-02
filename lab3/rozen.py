@@ -2,12 +2,13 @@ import math
 from prettytable import PrettyTable
 from typing import Callable
 
-def rozen(func: Callable, phi: Callable, eps: float) -> list:
-    print("\nМетод проекции градиента (Розена)")
+def rozen(func: Callable, phi: Callable, eps: float, maximize: bool = False) -> list:
+    mode = "максимум" if maximize else "минимум"
+    print(f"\nМетод проекции градиента (Розена) — {mode}")
     table = PrettyTable()
     table.field_names = ["iter", "x", "y", "step", "f()", "phi()"]
-    
-    x, y = 1.0, 0.0 # Точка на линии
+
+    x, y = 1.0, 0.0
     step = 0.1
     itter = 0
     delta = 1e-6
@@ -24,15 +25,15 @@ def rozen(func: Callable, phi: Callable, eps: float) -> list:
         proj_s = (gx * tx + gy * ty) / norm_t
         sx, sy = proj_s * tx, proj_s * ty
 
-        # Условие остановки: проекция градиента мала — достигнут экстремум на ограничении
         norm_s = math.sqrt(sx**2 + sy**2)
         if norm_s < eps:
             break
 
-        # Идём в сторону РОСТА f (ищем максимум, т.к. f=x²-y² — седло)
-        nx, ny = x + step * sx, y + step * sy
+        sign = 1 if maximize else -1
+        nx, ny = x + sign * step * sx, y + sign * step * sy
 
-        if func(nx, ny) <= func(x, y):
+        improved = func(nx, ny) > func(x, y) if maximize else func(nx, ny) < func(x, y)
+        if not improved:
             step /= 2
             if step < eps * 0.01:
                 break

@@ -2,8 +2,9 @@ import math
 from prettytable import PrettyTable
 from typing import Callable
 
-def lagrange(func: Callable, phi: Callable, eps: float) -> list:
-    print("\nМетод множителей Лагранжа")
+def lagrange(func: Callable, phi: Callable, eps: float, maximize: bool = False) -> list:
+    mode = "максимум" if maximize else "минимум"
+    print(f"\nМетод множителей Лагранжа — {mode}")
     table = PrettyTable()
     table.field_names = ["iter", "x", "y", "lambda", "error"]
 
@@ -20,14 +21,16 @@ def lagrange(func: Callable, phi: Callable, eps: float) -> list:
         dL_dx = df_dx + lam * dphi_dx
         dL_dy = df_dy + lam * dphi_dy
         dL_dlam = phi(x, y)
-        
+
         error = math.sqrt(dL_dx**2 + dL_dy**2 + dL_dlam**2)
         table.add_row([i, f"{x:.4f}", f"{y:.4f}", f"{lam:.4f}", f"{error:.6f}"])
-        
+
         if error < eps: break
-            
+
+        # При maximize=True знак по y переворачивается (Гессиан по y отрицательный)
+        y_sign = 1 if maximize else -1
         x -= lr * dL_dx
-        y += lr * dL_dy  # y: знак перевёрнут, т.к. f вогнута по y (Гессиан < 0)
+        y += y_sign * lr * dL_dy
         lam += lr * dL_dlam
         
     print(table)
